@@ -1,0 +1,97 @@
+Git - GitHub:
+
+Why Git?
+a) Track Changes
+b) Work Collabaratively
+c) Failure
+
+What is Version Control System?
+It controls the version.
+			Version
+==> Aryan: 15 lines --> Day 1 --> 1 --> AboutUs.html	--> Prod
+==> Aryan: 25 lines --> Day 2 --> 2 --> AboutUs.html + Index.html --> Prod	
+==> Aryan: 45 lines --> Day 3 --> 3 --> AboutUs.html + Index.html + Contact.html --> Prod
+==> Aryan: 55 lines --> Day 4 --> 4 --> Index.html
+==> Aryan: 55 lines --> Day 5 --> 5 --> Index.html
+
+Dev --> QA --> Prod
+
+Assignment:
+Different Types of VCS.
+
+What is Git?
+1) Git is a free & open source Distributed Version Control System.
+2) Git helps developers to keep track of the history of their code files by storing them in different version on server repository.
+3) Git stores snapshot of your project/code(NOT Differences).
+
+What is GitHub?
+GitHub is a cloud based service/environment that helps developers store & manage their code as well as track those changes.
+
+Differences Between Git & GitHub:
+		Git			GitHub
+1) Git is a tool to execute version control.		GitHub is a platform which utilizes Git to carry out its
+					functionalites.
+2) It is s/w which needs to be installed.		It is a web based platform we don't need to install BUT
+					we need to create an account in order to use.
+3) It is a CLI				It is a GUI
+
+Git Life Cycle:
+
+Git Commands:
+1) git init: It initializes your working directory & it creates 2 things
+a) It assigns a default branch: master
+b) It creates a hidden folder: .git
+
+2) git status: It displays all tracked/untracked/modified files.
+
+3) git add: It adds your untracked files to the staging area which are ready to be committed & now they are tracked.
+
+4) git commit: It records the files changes permanently & also it gives a version.
+
+5) git log: It will show you all logs for the file.
+
+6) git diff: If you want to know what data changes has been made to a file.
+
+7) git commit -a -m "": Skipping your Stage Area.
+		We cannot do this on a new file.
+		At least once the file should be committed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+1) pwd: present/print working directory
+2) clear: clears the screen
+Ctrl + L
+3) echo: print messages
+4) echo $?: If 0 means previous command was successful else any nos.
+5) ls: It lists all files & directores under current working directory.
+6) .file/folder_name: Anything starting with . means it is a hidden file/directory
+7) ls -a: It shows all hidden files & directories.
+8) cat: It allows us to create files, append a file & view a file.
+Ctrl + d --> save & close
+9) vi : Its a editor where we can modify data also we can create a file.
+w --> save
+q --> quit
+! --> forcefully
+10) ll: Long Listing
+11) cp: copy a file
+12) mv: cut & paste
+13) . --> single dot means current directory
+14) .. --> double dot means parent directory of cwd.
+15) cd --> change directories
+16) cd - --> It takes you to the previous/last path.
+
+
+
