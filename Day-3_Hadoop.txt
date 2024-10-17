@@ -1,0 +1,81 @@
+Hadoop:
+Hadoop is an open source framework which stores large amount of data i.e. HDFS & it process distribued data in parallel i.e. MapReduce over a cluster of commodity computers using a programming model.
+
+5 Vs:
+1) Volume: Size of data
+2) Velocity: Speed of data
+3) Variety: Structured/Unstructured/Semi-Structured
+4) Veracity: Data Anamolies
+id	name	city
+1	arif	pune
+arif	bnglr	2
+hyd		arif
+		shivam
+5) Value: ROI
+
+DFS: Distributed File System
+
+Advantages of Hadoop:
+1) Data Locality --> Distributed Processing
+2) Fault Tolerant
+3) Reliable/Highly Available
+
+Disadvantage of Hadoop:
+1) Lengthy Code --> Java
+WordCount --> Java --> 70-80 Lines
+WordCount --> Spark --> 2-3 Lines -> 10 to 100 times faster than Hadoop.
+2) Small File
+
+Jigsaw VM Installation: Completed
+
+Hadoop 1.x Architecture: Completed
+It understands from which machine the request is coming?
+What size that request is?
+How many blocks it is getting divided into?
+Which DN are working/responsible for processing data?
+Which DN are responsible for Replica?
+
+Hadoop 2.x Architecture: Completed
+
+HDFS Commands:
+
+start-all.sh	==> Start Hadoop Daemons/Services
+jps		==> To check Java Process Running
+Ctrl + L		==> Clear the Screen
+Ctrl + Shift + T	==> To Open a New Tab in Terminal
+
+1) -mkdir: It creates a directory
+hdfs dfs -mkdir /user/hduser/HFS
+hdfs dfs -mkdir /user/hduser/HFS/Input
+hdfs dfs -mkdir /user/hduser/HFS/Output
+
+2) -ls: It lists files & directories in the working directory
+hdfs dfs -ls /user/hduser/HFS
+
+3) -copyFromLocal: It copies file from Local to Hadoop
+hdfs dfs -copyFromLocal /home/hduser/LFS/datasets/file1.txt /user/hduser/HFS/Input/
+hdfs dfs -ls /user/hduser/HFS/Input/
+
+4) -put: It copies file from Local to Hadoop
+hdfs dfs -put /home/hduser/LFS/datasets/file2.txt /user/hduser/HFS/Input/
+hdfs dfs -ls /user/hduser/HFS/Input/
+
+5) -cat: To view the contents from a file
+hdfs dfs -cat /user/hduser/HFS/Input/file1.txt
+
+6) -copyToLocal: It copies file from Hadoop to Local
+hdfs dfs -copyToLocal /user/hduser/HFS/Input/file1.txt /home/hduser/LFS/datasets/ 
+
+7) -get: It copies file from Hadoop to Local
+hdfs dfs -get /user/hduser/HFS/Input/file2.txt .
+
+8) -touchz: It creates a zero byte file
+hdfs dfs -touchz /user/hduser/HFS/Input/emp_file.txt
+hdfs dfs -ls /user/hduser/HFS/Input/emp_file.txt
+
+9) -appendToFile: It appends the data to the file if available else it creates a new file.
+hdfs dfs -appendToFile /home/hduser/LFS/datasets/file1.txt /user/hduser/HFS/Input/emp_file.txt
+
+10) -rm: It removes a file from Hadoop Directory
+hdfs dfs -rm /user/hduser/HFS/Input/emp_file1.txt
+hdfs dfs -ls /user/hduser/HFS/Input/

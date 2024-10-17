@@ -1,0 +1,68 @@
+Data Visualization:
+
+What is BI?
+a) BI stands for Business Intelligence.
+b) It is a data driven DSS(Decision Support System) which helps us to analyze data to provide insights.
+
+Power BI:
+1) Power BI is a data visualization tool which converts data from different sources to meaningful dashboards/chars/reports.
+2) Its given by Microsoft & it has multiple connectors & services.
+
+3 Layers:
+Data Integration:
+Data Processing:
+Data Presentation:
+
+Power BI Desktop:
+
+File: Superstore.xls
+
+1) Find out Sales by Sub-Category?
+==> Column Chart:
+
+2) Find out Sales by Sub-Category by Segment?
+==> Stacked Column Chart?
+
+3) Find out Sales by Region?
+==> Pie/Donut Chart:
+
+4) Find out Sales by Order Date & Segment?
+==> Line Chart
+Note: Line Chart can be created mostly for Data Columns so that we can see the progress over the time.
+
+5) Find out distribution of Sales & Profibt by Sub-Category?
+Scatter Plot Chart ==> Animated Chart
+Default Animation Chart.
+Two Numerical Columns are required.
+
+6) Find out Profit & Discount by Order Date & Segment?
+Combo Chart: 
+
+Data Modelling:
+
+Power Query:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
