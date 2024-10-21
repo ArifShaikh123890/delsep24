@@ -1,0 +1,193 @@
+What is Hive?
+1) Hive is a datawarehouse/data summarization/data analytics system that is used to query & analyze large datasets stored in HDFS.
+2) Hive uses a query called hql i.e. Hive Query Language.
+3) Hive converts hql into map reduce program.
+4) Hive is NOT a DB.
+
+In Hive we have 2 types of Tables:
+1) Managed/Internal Tables:
+2) External Tables:
+
+1) Managed/Internal Tables:
+a) Managed tables are created by default and they are also called as Internal Tables.
+b) When we drop Managed tables data & table gets deleted.
+
+create table if not exists emp
+(
+id int,
+name string,
+sal int
+)
+row format delimited fields terminated by ','
+lines terminated by '\n'
+stored as textfile
+tblproperties('skip.header.line.count'='1');
+
+Set DB Name Property:
+set hive.cli.print.current.db=true;
+
+describe formatted <Table_Name>;
+
+Default Hive Location:
+/user/hive/warehouse/
+
+Directory getting created for DB Creation:
+hdfs dfs -ls /user/hive/warehouse/saif_db.db/
+Directory getting created for Table Creation:
+hdfs dfs -ls /user/hive/warehouse/saif_db.db/emp/
+
+Data Load from Local to Hive:
+load data local inpath '/home/hduser/LFS/datasets/emp.txt' into table emp;
+
+drop table emp;
+hdfs dfs -ls /user/hive/warehouse/saif_db.db/
+
+2) External Tables:
+a) External tables are NOT created by default we need to use Keyword i.e. external.
+b) When we drop External tables ONLY table gets deleted but data is preserved.
+
+create external table emp_ext
+(
+id int,
+name string,
+sal int
+)
+row format delimited fields terminated by ','
+tblproperties('skip.header.line.count'='1');
+
+describe formatted emp_ext;
+
+Data Load from Hadoop to Hive:
+hdfs dfs -copyFromLocal /home/hduser/LFS/datasets/emp.txt /user/hduser/HFS/Input/
+load data inpath '/user/hduser/HFS/Input/emp.txt' into table emp_ext;
+select * from emp_ext;
+hdfs dfs -ls /user/hive/warehouse/saif_db.db/
+hdfs dfs -ls /user/hive/warehouse/saif_db.db/emp_ext
+drop table emp_ext;
+hdfs dfs -ls /user/hive/warehouse/saif_db.db/
+
+Difference between when u load data from Local to Hive & Hadoop to Hive?
+Local to Hive: Copy & Paste
+Hadoop to Hive: Cut & Paste
+
+Location:
+create table emp_mgd
+(
+id int,
+name string,
+sal int
+)
+row format delimited fields terminated by ','
+location '/user/hive/warehouse/saif_db.db/emp_ext/'
+tblproperties('skip.header.line.count'='1');
+
+Partitions:
+Dividing the data into small parts for faster access.
+
+1) Static: Partitions values are Fixed.
+2) Dynamic: Partitions values Keeps changing.
+***************************************************************************************************************
+1) Static: When the partition column values are fixed.
+a) Where the client is sending different files.
+
+create table partition_emp_static
+(
+id int,
+name string,
+sal int
+)
+partitioned by (country string)
+row format delimited fields terminated by ','
+tblproperties("skip.header.line.count"="1");
+
+load data local inpath '/home/hduser/LFS/datasets/emp_ind.txt' into table partition_emp_static partition(country='IN');
+load data local inpath '/home/hduser/LFS/datasets/emp_uk.txt' into table partition_emp_static partition(country='UK');
+load data local inpath '/home/hduser/LFS/datasets/emp_us.txt' into table partition_emp_static partition(country='US');
+
+b) Where the client is sending entire data in a file.
+create table partition_emp_static_all
+(
+id int,
+name string,
+sal int
+)
+partitioned by (country string)
+row format delimited fields terminated by ','
+tblproperties("skip.header.line.count"="1");
+
+load data local inpath '/home/hduser/LFS/datasets/emp_partition_all.txt' into table partition_emp_static_all partition (country='IN');
+
+Issue: Entire data is sitting in one partition.
+
+Solution:
+1) We create a temp/stg/intermediatry table.
+2) First we load the data into tmp/stg
+3) Then from tmp/stg table we load the data into partitioned table.
+
+create table partition_stg_emp_static_all
+(
+id int,
+name string,
+sal int,
+country string
+)
+row format delimited fields terminated by ','
+tblproperties("skip.header.line.count"="1");
+
+load data local inpath '/home/hduser/LFS/datasets/emp_partition_all.txt' into table partition_stg_emp_static_all; 
+
+insert into table partition_emp_static_all partition (country='IN') select id,name,sal from partition_stg_emp_static_all where country='IN';
+
+Issue: Why 1 Row is getting loaded.
+
+Solution: Bcoz partition table had a property to skip 1 row.
+
+create table partition_emp_static_all_1
+(
+id int,
+name string,
+sal int
+)
+partitioned by (country string)
+row format delimited fields terminated by ',';
+
+insert into table partition_emp_static_all_1 partition (country='IN') select id,name,sal from partition_stg_emp_static_all where country='IN';
+insert into table partition_emp_static_all_1 partition (country='UK') select id,name,sal from partition_stg_emp_static_all where country='UK';
+insert into table partition_emp_static_all_1 partition (country='US') select id,name,sal from partition_stg_emp_static_all where country='US';
+
+2) Dynamic: Partition Column values keeps changing
+
+a) We create a temp/stg/intermediatry table.
+b) We load the data into tmp/stg
+c) Create Dynamic Partitioned Table
+d) Then from tmp/stg table we load the data into partitioned table.
+
+create table partition_stg_emp_static_all
+(
+id int,
+name string,
+sal int,
+country string
+)
+row format delimited fields terminated by ','
+tblproperties("skip.header.line.count"="1");
+
+load data local inpath '/home/hduser/LFS/datasets/emp_partition_all.txt' into table partition_stg_emp_static_all; 
+
+create table partition_emp_dynamic
+(
+id int,
+name string,
+sal int
+)
+partitioned by (country string)
+row format delimited fields terminated by ',';
+
+insert into table partition_emp_dynamic partition (country) select id,name,sal,country from partition_stg_emp_static_all;
+
+Error: FAILED: SemanticException [Error 10096]: Dynamic partition strict mode requires at least one static partition column. To turn this off set hive.exec.dynamic.partition.mode=nonstrict
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+insert into table partition_emp_dynamic partition (country) select id,name,sal,country from partition_stg_emp_static_all;
+**************************************************************************************************************
