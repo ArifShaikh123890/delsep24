@@ -1,0 +1,232 @@
+What is Spark?
+1) Spark is lightning fast computation framework which does distributed processing in parallel for large datassets on different nodes of the cluster.
+2) Spark is lazily evaluated & it processes in-memeory.
+3) Spark is consisdered to be 10 to 100 times faster than Hadoop because it processes data in-memory.
+4) Spark was developed using Scala Language & Spark supports 4 APIs i.e. Java, Scala, Python & R.
+
+Why Spark?
+In Memory processing
+Support for Real time processsing ==> structured streaming --> RDDs & DFs
+One Single Framework --> Spark SQL, Structured Streaming, DFs, RDDs, MLib
+
+Spark Architecture:
+
+Runtime Architecture of Spark Application OR Execution Flow of Spark Application.
+1) Apache Spark uses Master-Slave Architecture.
+2) Client submits user application code. When an application is submitted the driver implicitly converts the application code containing transformations & actions into a DAG (series of RDDs).
+3) At this stage it performs pipeline optimization by resolving Unresolved Logical Plans into a Physical Execution Plan which contains jobs, stages & tasks.
+4) Now the driver talks to Cluster Manager & negotiates for resources. CM launches executors on worker nodes on behalf of the driver.
+5) Now the driver sends the tasks to these executors based on data placement.
+6) When executor starts they register themselves with drivers so that the driver will have complete view of all executors.
+7) Executors starts executing the task assigned by the driver & will be monitored by your driver program.
+8) Driver schedules future tasks. Tracks the location of cached data to schedule future tasks.
+9) Driver provides all of the above information of running application on Spark Web UI on port http://localhost:4040
+10) When the driver’s sc stop method is called it will terminate all the executors & release resources from CM.
+
+What is SparkContext in Spark?
+1) SparkContext is the entry point of Apache Spark functionality. 
+2) To create SparkContext, first SparkConf should be made. 
+3) The SparkConf has a configuration parameter that our driver application will pass to SparkContext.
+
+from pyspark import SparkContext
+from pyspark import SparkConf
+
+sparkConf = SparkConf()
+sc = SparkContext()
+
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.getOrCreate()
+
+Default:
+sc --> RDD
+spark --> DF
+
+Conversion:
+RDD --> DF
+DF --> RDD
+
+RDD:
+1) Resilient Distributed Dataset (aka RDD) is the primary data abstraction in Apache Spark and the core of Spark i.e. referred as "Spark Core".
+2) It is immutable collection of objects & lazily evaluated.
+3) Each dataset in RDD is divided into logical partitions, which may be computed on different nodes of the cluster.
+
+RDD Limitations:
+1) RDDs does not have in-built optimization.
+2) RDD does not have schema.
+
+RDDs can be created in 2 different ways:
+1) parallelize
+2) external dataset
+3) from existing RDD
+
+1) parallelize:
+>>> data = [1,2,3,4,5,6,7,8,9,10]
+>>> myRdd = sc.parallelize(data)
+>>> type(myRdd)
+<class 'pyspark.rdd.RDD'>
+>>> myRdd.collect()
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+>>> myRdd.take(5)
+[1, 2, 3, 4, 5]
+>>> for i in myRdd.take(5):
+...     print(i)
+... 
+
+2) external dataset:
+>>> readFile = sc.textFile('/home/hduser/LFS/datasets/wordcount.txt')
+>>> type(readFile)
+<class 'pyspark.rdd.RDD'>
+>>> readFile.collect()
+['arif nitin mayur arif', 'mayur arif nitish', 'vansh deepak divy arif']
+>>> for i in readFile.collect():
+...     print(i)
+... 
+arif nitin mayur arif
+mayur arif nitish
+vansh deepak divy arif
+
+3) existing RDD:
+>>> myRdd.collect()
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+>>> newRdd = myRdd.filter(lambda x: x%2==0)
+>>> newRdd.collect()
+[2, 4, 6, 8, 10]
+>>> newRdd = myRdd.filter(lambda x: x > 5)
+>>> newRdd.collect()
+[6, 7, 8, 9, 10]
+
+>>> myRdd.glom().collect()
+[[1, 2], [3, 4], [5, 6], [7, 8, 9, 10]]
+>>> myRdd.getNumPartitions()
+4
+
+RDD in Spark supports two types of operations:
+1) Transformation
+2) Actions
+
+1) Transformations:
+a) Transformations are operation which will transform your RDD data from one form to another. 
+b) And when you apply this operation on any RDD, you will get a new RDD of transformed data (RDDs in Spark are immutable).
+
+a) Narrow Transformations:
+In Narrow transformation, all the elements that are required to compute the records in a single partition live in the single partition of parent RDD.
+e.g. map, flatMap, filter etc...
+
+>>> newRdd = myRdd.map(lambda x: x**2)
+>>> newRdd.collect()
+[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+>>> newRdd.glom().collect()
+[[1, 4], [9, 16], [25, 36], [49, 64, 81, 100]]
+>>> myRdd.glom().collect()
+[[1, 2], [3, 4], [5, 6], [7, 8, 9, 10]]
+
+>>> myRdd = sc.parallelize(data, 2)
+>>> myRdd.collect()
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+>>> myRdd.glom().collect()
+[[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
+
+b) Wide Transformations:
+a) In wide transformation, all the elements that are required to compute the records in the single partition may live in many partitions of parent RDD. 
+b) Wide transformations are also known as shuffle transformations because they may or may not depend on a shuffle.
+
+map:
+>>> a = sc.parallelize([1,2,3,4,5])
+>>> result = a.map(lambda x: (x, x+2))
+>>> result.collect()
+[(1, 3), (2, 4), (3, 5), (4, 6), (5, 7)]
+
+flatMap:
+>>> result = a.flatMap(lambda x: (x, x+2))
+>>> result.collect()
+[1, 3, 2, 4, 3, 5, 4, 6, 5, 7]                     
+
+Difference between Map & FlatMap:
+>>> a = sc.parallelize([1,2,3,4,5])
+>>> mapOp = a.map(lambda x: (x, x+2))
+>>> for i in mapOp.collect():
+...     print(i)
+... 
+(1, 3)
+(2, 4)
+(3, 5)
+(4, 6)
+(5, 7)
+>>> fmOp = a.flatMap(lambda x: (x, x+2))
+>>> for i in fmOp.collect():
+...     print(i)
+... 
+1
+3
+2
+4
+3
+5
+4
+6
+5
+7
+
+reduce:
+x = 1,2,3,4,5
+(1,2)
+ x y
+3,3
+x y
+6
+
+WordCount Program:
+1) Put wordcount file in Hadoop:
+hdfs dfs -put /home/hduser/LFS/datasets/wordcount.txt /user/hduser/HFS/Input/
+hdfs dfs -ls /user/hduser/HFS/Input/
+
+2) Read the file & create RDD:
+readFile = sc.textFile('hdfs://localhost:54310/user/hduser/HFS/Input/wordcount.txt')
+readFile.collect()
+>>> for i in readFile.collect():
+    print(i)
+
+3) Split the RDD & assign a default value 1:
+splitRdd = readFile.flatMap(lambda x: x.split( ))
+splitRdd.collect()
+assignRdd = splitRdd.map(lambda x: (x, 1))
+assignRdd.collect()
+[
+ [('arif', 1), ('nitin', 1), ('mayur', 1), ('arif', 1), ('mayur', 1), ('arif', 1), ('nitish', 1)], 
+ [('vansh', 1), ('deepak', 1), ('divy', 1), ('arif', 1)]
+]
+
+4) Apply count on key:
+wcRdd = assignRdd.reduceByKey(lambda x,y: x+y)
+wcRdd.collect()
+
+5) Write data to Hadoop:
+wcRdd.saveAsTextFile('hdfs://localhost:54310/user/hduser/HFS/Output/repl_op')
+hdfs dfs -ls /user/hduser/HFS/Output/repl_op
+hdfs dfs -cat /user/hduser/HFS/Output/repl_op/part*
+***************************************************************************************************************
+Same WC Program in Jupyter Notebook:
+
+import findspark
+findspark.init('/usr/local/spark')
+
+from pyspark import SparkConf
+from pyspark import SparkContext
+
+sparkConf = SparkConf().setAppName('WordCount Program').setMaster('local[*]')
+sc = SparkContext(conf=sparkConf)
+
+readFile = sc.textFile('hdfs://localhost:54310/user/hduser/HFS/Input/wordcount.txt')
+readFile.collect()
+
+splitRdd = readFile.flatMap(lambda x: x.split( ))
+assignRdd = splitRdd.map(lambda x: (x, 1))
+assignRdd.collect()
+
+wcRdd = assignRdd.reduceByKey(lambda x,y: x+y)
+wcRdd.collect()
+
+wcRdd.saveAsTextFile('hdfs://localhost:54310/user/hduser/HFS/Output/jn_op')
+!hdfs dfs -ls /user/hduser/HFS/Output/jn_op
+!hdfs dfs -cat /user/hduser/HFS/Output/jn_op/part*
