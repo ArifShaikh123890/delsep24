@@ -1,0 +1,85 @@
+***************************************************************************************************************
+Diff File Formats:
+
+Consideration of File Formats:
+1) Save Storage
+2) Fast Processing
+3) Less Time for I/O operation
+
+Broadly File Formats are classified into two categories:
+1) Row Based File Format:
+a) Faster Writes
+b) Slower Reads
+c) Less Compression compared to column based file format
+e.g. Text, Avro etc.
+
+id	name	loc	sal
+101	arif	pune	1000
+102	saif	bnglr	2000
+103	arif	hyd	3000
+
+2) Column Based File Format:
+a) Slower Writes
+b) Faster Reads
+c) More Compression compared to row based file format
+e.g. ORC, Parquet etc.
+
+id		name		loc		sal
+101,102,103	arif,saif,arif	pune,bnglr,hyd	1000,2000,3000
+
+Different File Formats:
+
+1) ORC: --> Hive
+a) Columnar File Format
+b) Slow Writes with Faster Reads while trying to read subset of columns
+c) Efficient Compression*
+
+2) Avro:
+a) Row Based File Format
+b) Fast Writes & Slow Reads while trying to read subset of columns.
+c) Very mature for Schema Evolution*
+
+3) Parquet: --> Spark
+a) Columnar File Format
+b) Slow Writes with Faster Reads while trying to read subset of columns
+c) Not much support for Schema Evolution & has columns in end only
+d) Very good in handling Nested Data*
+e) Supports good compression*
+***************************************************************************************************************
+Spark SQL: Read & Write MySQL Tables:
+select 
+	a.empno as emp_empno,
+  	a.ename as emp_ename,
+	b.empno as mgr_empno,
+	b.ename as mgr_ename
+from emp a, emp b
+where a.mgr = b.empno;
+
+select 
+	a.mgr, count(a.ename) as emp_cnt
+from emp a, emp b
+where a.mgr = b.empno
+group by a.mgr;
+
+Final Query:
+select 
+	a.empno as emp_empno,
+  	a.ename as emp_ename,
+	b.empno as mgr_empno,
+	b.ename as mgr_ename,
+	c.emp_cnt as mgr_team_cnt
+from emp a, emp b, (select 
+	a.mgr, count(a.ename) as emp_cnt
+	from emp a, emp b
+	where a.mgr = b.empno
+	group by a.mgr) c
+where a.mgr = b.empno
+and b.empno = c.mgr
+order by b.empno;
+***************************************************************************************************************
+Read & Write Hive Tables:
+Completed
+***************************************************************************************************************
+Structured Streaming:
+Completed
+***************************************************************************************************************

@@ -1,0 +1,63 @@
+DataFrame:
+1) DataFrame is a distributed collection of data organized into rows & columns.
+2) DataFrame appeared in Spark Release 1.3.0.
+3) DataFrame contains rows with Schema & it has in-built optimization.
+4) The features common to RDD and DataFrame are immutability, in-memory and distributed computing capability.
+5) It allows the user to impose the structure onto a distributed collection of data.
+6) We can build DataFrame from different data sources. For e.g. structured data file, tables in Hive, external databases or existing RDDs.
+
+Limitations of Spark RDD:
+1) It does not have any built-in optimization engine.
+2) It does not have schema.
+Thus to overcome these limitations, DataFrame came into existence.
+
+Default:
+sc --> RDD
+spark --> DF
+
+Convert RDD to DF:
+Code Completed
+
+How to create DF from SQLContext & spark:
+Code Completed
+
+How to Read & Write in Hadoop with Dataframes:
+Code Completed
+
+# Write Modes:
+# 1) error: If the dir is not available it will create dir else it will give error.
+# 2) ignore: If the dir is not avaialbe it will create dir else it will ignore
+# 3) append: If the dir is not avaialbe it will create dir else it will append data 
+            # to existing dir.
+# 4) overwrite: If the dir is not avaialbe it will create dir else it will overwrite the
+            # existing dir.
+
+select
+groupBy
+orderBy
+sum, avg, max, min
+split
+explode
+date_format
+filter
+joins
+
+genres
+Adeventure|Comedy|Action|Thrillier
+
+split
+[Adeventure,Comedy,Action,Thrillier]
+
+explode
+Adeventure
+Comedy
+Action
+Thrillier
+
+Movielens Dataframe 10 Q&A Hands-On:
+
+
+
+
+
+
