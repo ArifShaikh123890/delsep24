@@ -1,0 +1,15 @@
+query = counts_df \
+    .writeStream \
+    .outputMode("complete") \
+    .format("memory") \
+    .queryName("strmg") \
+    .start()
+
+from IPython.display import display, clear_output
+from time import sleep
+
+while True:
+    clear_output(wait=True)
+    display(query.status)
+    display(spark.sql('SELECT * FROM strmg').show())
+    sleep(3)
